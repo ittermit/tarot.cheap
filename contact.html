@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Ksenia Star Tarot - Book Your Reading Today</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --dark-purple: #2D1B45;
+            --navy-blue: #1A2B4C;
+            --gold: #D4AF37;
+            --cream: #F7F3E9;
+            --silver: #C0C0C0;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--dark-purple) 0%, var(--navy-blue) 100%);
+            color: var(--cream);
+            overflow-x: hidden;
+        }
+        
+        .cinzel { font-family: 'Cinzel', serif; }
+        .playfair { font-family: 'Playfair Display', serif; }
+        
+        .hero-bg {
+            background: linear-gradient(rgba(45, 27, 69, 0.8), rgba(26, 43, 76, 0.8)), url('resources/mystical-cards-spread.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        
+        .golden-glow {
+            text-shadow: 0 0 20px var(--gold), 0 0 40px var(--gold);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 20px var(--gold), 0 0 40px var(--gold); }
+            to { text-shadow: 0 0 30px var(--gold), 0 0 60px var(--gold); }
+        }
+        
+        .particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .btn-mystical {
+            background: linear-gradient(45deg, var(--gold), #F4E4BC);
+            color: var(--dark-purple);
+            font-weight: 600;
+            padding: 12px 30px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-mystical:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.4);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gold);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .contact-card {
+            background: rgba(45, 27, 69, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.2);
+            border-color: rgba(212, 175, 55, 0.6);
+        }
+        
+        .social-link {
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .social-link:hover {
+            background: rgba(212, 175, 55, 0.3);
+            border-color: var(--gold);
+            transform: translateY(-2px);
+        }
+        
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .form-input {
+            background: rgba(45, 27, 69, 0.7);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: var(--cream);
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+        
+        .form-input::placeholder {
+            color: var(--silver);
+        }
+        
+        .booking-option {
+            background: rgba(26, 43, 76, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .booking-option:hover {
+            border-color: var(--gold);
+            background: rgba(26, 43, 76, 0.9);
+        }
+    </style>
+</head>
+<body>
+    <!-- Particle Background -->
+    <div id="particle-container" class="particle-canvas"></div>
+    
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 bg-black bg-opacity-50 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="cinzel text-2xl font-bold text-golden-glow">Ksenia Star Tarot</div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="nav-link text-cream hover:text-gold">Home</a>
+                    <a href="about.html" class="nav-link text-cream hover:text-gold">About</a>
+                    <a href="readings.html" class="nav-link text-cream hover:text-gold">Readings</a>
+                    <a href="blog.html" class="nav-link text-cream hover:text-gold">Blog</a>
+                    <a href="contact.html" class="nav-link text-gold">Contact</a>
+                </div>
+                <button class="btn-mystical" onclick="window.location.href='https://kseniastar.etsy.com'">Book Reading</button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero-bg min-h-screen flex items-center justify-center pt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="reveal">
+                <h1 class="cinzel text-5xl md:text-7xl font-bold golden-glow mb-6">Get in Touch</h1>
+                <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto playfair">
+                    Ready to discover what the cards have in store for you? Let's connect and begin your journey
+                </p>
+                <button class="btn-mystical text-lg px-8 py-4" onclick="scrollToBooking()">Book Your Reading</button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contact Methods -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="cinzel text-4xl font-bold text-gold mb-6">How to Connect</h2>
+                <p class="text-lg md:text-xl max-w-3xl mx-auto">
+                    Choose the method that feels most comfortable for you to begin your spiritual journey
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+                <!-- Etsy Shop -->
+                <div class="contact-card rounded-lg p-8 text-center reveal">
+                    <div class="text-4xl mb-4">🛍️</div>
+                    <h3 class="cinzel text-xl font-bold text-gold mb-4">Etsy Shop</h3>
+                    <p class="text-cream mb-6">
+                        Browse all available readings and book directly through my secure Etsy shop
+                    </p>
+                    <button class="btn-mystical w-full" onclick="window.location.href='https://kseniastar.etsy.com'">
+                        Visit Shop
+                    </button>
+                </div>
+                
+                <!-- Social Media -->
+                <div class="contact-card rounded-lg p-8 text-center reveal">
+                    <div class="text-4xl mb-4">📱</div>
+                    <h3 class="cinzel text-xl font-bold text-gold mb-4">Social Media</h3>
+                    <p class="text-cream mb-6">
+                        Follow for daily insights, special offers, and spiritual community connection
+                    </p>
+                    <button class="btn-mystical w-full" onclick="window.location.href='https://linktr.ee/zo_di_ac'">
+                        All Links
+                    </button>
+                </div>
+                
+                <!-- Email -->
+                <div class="contact-card rounded-lg p-8 text-center reveal">
+                    <div class="text-4xl mb-4">✉️</div>
+                    <h3 class="cinzel text-xl font-bold text-gold mb-4">Email</h3>
+                    <p class="text-cream mb-6">
+                        For questions about readings or custom requests, reach out via email
+                    </p>
+                    <button class="btn-mystical w-full" onclick="copyEmail()">
+                        Copy Email
+                    </button>
+                </div>
+                
+                <!-- Consultation -->
+                <div class="contact-card rounded-lg p-8 text-center reveal">
+                    <div class="text-4xl mb-4">💬</div>
+                    <h3 class="cinzel text-xl font-bold text-gold mb-4">Free Consultation</h3>
+                    <p class="text-cream mb-6">
+                        Not sure which reading is right for you? Let's chat about your needs
+                    </p>
+                    <button class="btn-mystical w-full" onclick="showConsultationForm()">
+                        Schedule Chat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Booking Options -->
+    <section id="booking-section" class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-purple-900 to-navy-900">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="cinzel text-4xl font-bold text-gold mb-6">Book Your Reading</h2>
+                <p class="text-lg md:text-xl max-w-3xl mx-auto">
+                    Choose from my most popular reading types or explore the full collection in my Etsy shop
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Quick Readings -->
+                <div class="booking-option rounded-lg p-6 reveal">
+                    <div class="text-center mb-4">
+                        <div class="text-4xl mb-3">⚡</div>
+                        <h3 class="cinzel text-xl font-bold text-gold mb-2">Quick Answers</h3>
+                        <div class="text-gold font-semibold mb-4">Starting at $15</div>
+                    </div>
+                    <ul class="text-sm text-cream space-y-2 mb-6">
+                        <li>• Yes or No questions</li>
+                        <li>• Quick guidance (15-30 min)</li>
+                        <li>• Perfect for daily decisions</li>
+                        <li>• Fast turnaround</li>
+                    </ul>
+                    <button class="btn-mystical w-full" onclick="window.location.href='https://kseniastar.etsy.com'">
+                        Book Now
+                    </button>
+                </div>
+                
+                <!-- Love Readings -->
+                <div class="booking-option rounded-lg p-6 reveal">
+                    <div class="text-center mb-4">
+                        <div class="text-4xl mb-3">💕</div>
+                        <h3 class="cinzel text-xl font-bold text-gold mb-2">Love & Relationships</h3>
+                        <div class="text-gold font-semibold mb-4">Starting at $30</div>
+                    </div>
+                    <ul class="text-sm text-cream space-y-2 mb-6">
+                        <li>• Relationship analysis</li>
+                        <li>• Soulmate connections</li>
+                        <li>• Love compatibility</li>
+                        <li>• Emotional guidance</li>
+                    </ul>
+                    <button class="btn-mystical w-full" onclick="window.location.href='https://kseniastar.etsy.com'">
+                        Book Now
+                    </button>
+                </div>
+                
+                <!-- Career Readings -->
+                <div class="booking-option rounded-lg p-6 reveal">
+                    <div class="text-center mb-4">
+                        <div class="text-4xl mb-3">💼</div>
+                        <h3 class="cinzel text-xl font-bold text-gold mb-2">Career & Success</h3>
+                        <div class="text-gold font-semibold mb-4">Starting at $35</div>
+                    </div>
+                    <ul class="text-sm text-cream space-y-2 mb-6">
+                        <li>• Career path guidance</li>
+                        <li>• Financial opportunities</li>
+                        <li>• Professional growth</li>
+                        <li>• Business decisions</li>
+                    </ul>
+                    <button class="btn-mystical w-full" onclick="window.location.href='https://kseniastar.etsy.com'">
+                        Book Now
+                    </button>
+                </div>
+                
+                <!-- Spiritual Readings -->
+                <div class="booking-option rounded-lg p-6 reveal">
+                    <div class="text-center mb-4">
+                        <div class="text-4xl mb-3">🌙</div>
+                        <h3 class="cinzel text-xl font-bold text-gold mb-2">Spiritual Growth</h3>
+                        <div class="text-gold font-semibold mb-4">Starting at $40</div>
+                    </div>
+                    <ul class="text-sm text-cream space-y-2 mb-6">
+                        <li>• Life purpose exploration</li>
+                        <li>• Spiritual development</li>
+                        <li>• Inner wisdom connection</li>
+                        <li>• Soul mission clarity</li>
+                    </ul>
+                    <button class="btn-mystical w-full" onclick="window.location.href='https://kseniastar.etsy.com'">
+                        Book Now
+                    </button>
+                </div>
+                
+                <!-- In-Depth Readings -->
+                <div class="booking-option rounded-lg p-6 reveal">
+                    <div class="text-center mb-4">
+                        <div class="text-4xl mb-3">⭐</div>
+                        <h3 class="cinzel text-xl font-bold text-gold mb-2">In-Depth Analysis</h3>
+                        <div class="text-gold font-semibold mb-4">Starting at $60</div>
+                    </div>
+                    <ul class="text-sm text-cream space-y-2 mb-6">
+                        <li>• Comprehensive life reading</li>
+                        <li>• Complex situation analysis</li>
+                        <li>• Multiple life areas</li>
+                        <li>• Detailed guidance (60+ min)</li>
+                    </ul>
+                    <button class="btn-mystical w-full" onclick="window.location.href='https://kseniastar.etsy.com'">
+                        Book Now
+                    </button>
+                </div>
+                
+                <!-- Custom Readings -->
+                <div class="booking-option rounded-lg p-6 reveal">
+                    <div class="text-center mb-4">
+                        <div class="text-4xl mb-3">🔮</div>
+                        <h3 class="cinzel text-xl font-bold text-gold mb-2">Custom Reading</h3>
+                        <div class="text-gold font-semibold mb-4">Contact for Price</div>
+                    </div>
+                    <ul class="text-sm text-cream space-y-2 mb-6">
+                        <li>• Tailored to your needs</li>
+                        <li>• Specific questions welcome</li>
+                        <li>• Flexible format</li>
+                        <li>• Personal consultation</li>
+                    </ul>
+                    <button class="btn-mystical w-full" onclick="showCustomForm()">
+                        Request Quote
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Social Media -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="cinzel text-4xl font-bold text-gold mb-6">Join the Community</h2>
+                <p class="text-lg md:text-xl max-w-3xl mx-auto">
+                    Connect with me on social media for daily insights, live readings, and spiritual community
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <a href="https://linktr.ee/zo_di_ac" class="social-link rounded-lg p-6 text-center block reveal">
+                    <div class="text-3xl mb-3">📱</div>
+                    <h3 class="cinzel text-lg font-bold text-gold mb-2">All Social Links</h3>
+                    <p class="text-sm text-cream">Access all my social media profiles in one place</p>
+                </a>
+                
+                <a href="https://linktr.ee/zo_di_ac" class="social-link rounded-lg p-6 text-center block reveal">
+                    <div class="text-3xl mb-3">📸</div>
+                    <h3 class="cinzel text-lg font-bold text-gold mb-2">Instagram</h3>
+                    <p class="text-sm text-cream">Daily card draws and spiritual inspiration</p>
+                </a>
+                
+                <a href="https://linktr.ee/zo_di_ac" class="social-link rounded-lg p-6 text-center block reveal">
+                    <div class="text-3xl mb-3">🐦</div>
+                    <h3 class="cinzel text-lg font-bold text-gold mb-2">Twitter</h3>
+                    <p class="text-sm text-cream">Quick insights and community discussions</p>
+                </a>
+                
+                <a href="https://linktr.ee/zo_di_ac" class="social-link rounded-lg p-6 text-center block reveal">
+                    <div class="text-3xl mb-3">📺</div>
+                    <h3 class="cinzel text-lg font-bold text-gold mb-2">YouTube</h3>
+                    <p class="text-sm text-cream">Video readings and spiritual guidance</p>
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- FAQ Links -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-purple-900 to-navy-900">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="cinzel text-4xl font-bold text-gold mb-6">Frequently Asked Questions</h2>
+            </div>
+            
+            <div class="space-y-6">
+                <div class="contact-card rounded-lg p-6 reveal">
+                    <h3 class="cinzel text-lg font-bold text-gold mb-3">How do I book a reading?</h3>
+                    <p class="text-cream">
+                        The easiest way is through my Etsy shop at kseniastar.etsy.com. You can browse all available readings, select your preferred type, and book directly. I typically respond within 24 hours to confirm your booking.
+                    </p>
+                </div>
+                
+                <div class="contact-card rounded-lg p-6 reveal">
+                    <h3 class="cinzel text-lg font-bold text-gold mb-3">What information do I need to provide?</h3>
+                    <p class="text-cream">
+                        For most readings, I'll need your name and specific question or area of focus. For relationship readings, I may need the other person's first name. The more specific your question, the more detailed your reading will be.
+                    </p>
+                </div>
+                
+                <div class="contact-card rounded-lg p-6 reveal">
+                    <h3 class="cinzel text-lg font-bold text-gold mb-3">How are readings delivered?</h3>
+                    <p class="text-cream">
+                        Most readings are delivered via email with a detailed written interpretation, photos of your card spread, and any additional insights. Some readings may include video or audio components depending on the type selected.
+                    </p>
+                </div>
+                
+                <div class="contact-card rounded-lg p-6 reveal">
+                    <h3 class="cinzel text-lg font-bold text-gold mb-3">What's your turnaround time?</h3>
+                    <p class="text-cream">
+                        Standard readings are typically delivered within 2-3 business days. Rush orders are available for an additional fee. I'll always communicate the expected delivery time when you book.
+                    </p>
+                </div>
+                
+                <div class="contact-card rounded-lg p-6 reveal">
+                    <h3 class="cinzel text-lg font-bold text-gold mb-3">Do you offer refunds?</h3>
+                    <p class="text-cream">
+                        I stand behind the quality of my readings. If you're not satisfied with your reading, please contact me within 48 hours of delivery. I'll work with you to address any concerns or provide clarification.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    
+    
+    <!-- Footer -->
+    <footer class="bg-black bg-opacity-70 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto text-center">
+            <div class="cinzel text-2xl font-bold text-gold mb-4">Ksenia Star Tarot</div>
+            <p class="text-cream mb-6">Guiding you through life's mysteries with ancient wisdom and intuitive insight</p>
+            <div class="flex justify-center space-x-6 mb-6">
+                <a href="https://kseniastar.etsy.com" class="text-gold hover:text-cream transition-colors">Etsy Shop</a>
+                <a href="https://linktr.ee/zo_di_ac" class="text-gold hover:text-cream transition-colors">Social Media</a>
+            </div>
+            <p class="text-silver text-sm">© 2025 Ksenia Star Tarot. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Contact form functionality
+        function copyEmail() {
+            // Simulate copying email to clipboard
+            const email = 'kseniastar@example.com'; // This would be the actual email
+            navigator.clipboard.writeText(email).then(() => {
+                alert('Email copied to clipboard: ' + email);
+            }).catch(() => {
+                alert('Email: kseniastar@example.com');
+            });
+        }
+        
+        function submitContactForm(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData);
+            
+            // Simulate form submission
+            alert(`Thank you for your message, ${data.name}! I'll get back to you within 24 hours.`);
+            event.target.reset();
+        }
+        
+        function showConsultationForm() {
+            alert('Consultation form would open here. For now, please use the contact form below or reach out through Etsy!');
+        }
+        
+        function showCustomForm() {
+            alert('Custom reading request form would open here. Please use the contact form below to describe your needs!');
+        }
+        
+        function scrollToBooking() {
+            document.getElementById('booking-section').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        }
+        
+        // Particle system (simplified version)
+        let particles = [];
+        let particleCount = 30;
+        
+        function setup() {
+            let canvas = createCanvas(windowWidth, windowHeight);
+            canvas.parent('particle-container');
+            
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+        
+        function draw() {
+            clear();
+            
+            for (let particle of particles) {
+                particle.update();
+                particle.display();
+            }
+        }
+        
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+        
+        class Particle {
+            constructor() {
+                this.x = random(width);
+                this.y = random(height);
+                this.size = random(2, 4);
+                this.speedX = random(-0.3, 0.3);
+                this.speedY = random(-0.3, 0.3);
+                this.opacity = random(0.2, 0.6);
+                this.color = color(212, 175, 55, this.opacity * 255);
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                
+                if (this.x > width) this.x = 0;
+                if (this.x < 0) this.x = width;
+                if (this.y > height) this.y = 0;
+                if (this.y < 0) this.y = height;
+                
+                this.opacity += random(-0.01, 0.01);
+                this.opacity = constrain(this.opacity, 0.1, 0.6);
+                this.color = color(212, 175, 55, this.opacity * 255);
+            }
+            
+            display() {
+                fill(this.color);
+                noStroke();
+                ellipse(this.x, this.y, this.size);
+            }
+        }
+        
+        // Scroll reveal animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const revealElements = document.querySelectorAll('.reveal');
+            
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+            
+            revealElements.forEach(element => {
+                revealObserver.observe(element);
+            });
+        });
+    </script>
+</body>
+</html>

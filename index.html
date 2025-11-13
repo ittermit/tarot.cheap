@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ksenia Star Tarot - Mystical Guidance & Spiritual Readings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
+    
+    <style>
+        :root {
+            --dark-purple: #2D1B45;
+            --navy-blue: #1A2B4C;
+            --gold: #D4AF37;
+            --cream: #F7F3E9;
+            --silver: #C0C0C0;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--dark-purple) 0%, var(--navy-blue) 100%);
+            color: var(--cream);
+            overflow-x: hidden;
+        }
+        
+        .cinzel { font-family: 'Cinzel', serif; }
+        .playfair { font-family: 'Playfair Display', serif; }
+        
+        .hero-bg {
+            background: linear-gradient(rgba(45, 27, 69, 0.7), rgba(26, 43, 76, 0.7)), url('resources/hero-tarot-workspace.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px) rotateY(10deg);
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.3);
+        }
+        
+        .golden-glow {
+            text-shadow: 0 0 20px var(--gold), 0 0 40px var(--gold);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 20px var(--gold), 0 0 40px var(--gold); }
+            to { text-shadow: 0 0 30px var(--gold), 0 0 60px var(--gold); }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .btn-mystical {
+            background: linear-gradient(45deg, var(--gold), #F4E4BC);
+            color: var(--dark-purple);
+            font-weight: 600;
+            padding: 12px 30px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-mystical:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.4);
+        }
+        
+        .btn-mystical::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-mystical:hover::before {
+            left: 100%;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gold);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .testimonial-card {
+            background: rgba(45, 27, 69, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+        
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Particle Background -->
+    <div id="particle-container" class="particle-canvas"></div>
+    
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 bg-black bg-opacity-50 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="cinzel text-2xl font-bold text-golden-glow">Ksenia Star Tarot</div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="nav-link text-cream hover:text-gold">Home</a>
+                    <a href="about.html" class="nav-link text-cream hover:text-gold">About</a>
+                    <a href="readings.html" class="nav-link text-cream hover:text-gold">Readings</a>
+                    <a href="blog.html" class="nav-link text-cream hover:text-gold">Blog</a>
+                    <a href="contact.html" class="nav-link text-cream hover:text-gold">Contact</a>
+                </div>
+                <button class="btn-mystical" onclick="window.location.href='https://kseniastar.etsy.com'">Book Reading</button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero-bg min-h-screen flex items-center justify-center pt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="reveal">
+                <h1 class="cinzel text-5xl md:text-7xl font-bold golden-glow mb-6">
+                    <span id="typed-text"></span>
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto playfair">
+                    Discover your path through ancient wisdom and intuitive guidance. 
+                    Let the cards illuminate your journey of self-discovery and spiritual growth.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <button class="btn-mystical text-lg px-8 py-4" onclick="scrollToReadings()">
+                        Explore Readings
+                    </button>
+                    <button class="btn-mystical text-lg px-8 py-4" onclick="window.location.href='https://kseniastar.etsy.com'">
+                        Book Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Interactive Card Selector -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="cinzel text-4xl md:text-5xl font-bold text-gold mb-6">Choose Your Reading</h2>
+                <p class="text-lg md:text-xl max-w-3xl mx-auto">
+                    Hover over the mystical cards to discover the perfect reading for your current journey
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-16">
+                <div class="card-hover bg-gradient-to-b from-purple-900 to-navy-900 rounded-lg p-6 text-center cursor-pointer floating" 
+                     style="animation-delay: 0s;" onclick="showReadingInfo('general')">
+                    <div class="text-4xl mb-4">🔮</div>
+                    <h3 class="cinzel text-lg font-semibold text-gold mb-2">General Reading</h3>
+                    <p class="text-sm text-cream">Overall life guidance</p>
+                </div>
+                
+                <div class="card-hover bg-gradient-to-b from-purple-900 to-navy-900 rounded-lg p-6 text-center cursor-pointer floating" 
+                     style="animation-delay: 0.5s;" onclick="showReadingInfo('love')">
+                    <div class="text-4xl mb-4">💕</div>
+                    <h3 class="cinzel text-lg font-semibold text-gold mb-2">Love & Relationships</h3>
+                    <p class="text-sm text-cream">Matters of the heart</p>
+                </div>
+                
+                <div class="card-hover bg-gradient-to-b from-purple-900 to-navy-900 rounded-lg p-6 text-center cursor-pointer floating" 
+                     style="animation-delay: 1s;" onclick="showReadingInfo('career')">
+                    <div class="text-4xl mb-4">💼</div>
+                    <h3 class="cinzel text-lg font-semibold text-gold mb-2">Career & Finances</h3>
+                    <p class="text-sm text-cream">Professional guidance</p>
+                </div>
+                
+                <div class="card-hover bg-gradient-to-b from-purple-900 to-navy-900 rounded-lg p-6 text-center cursor-pointer floating" 
+                     style="animation-delay: 1.5s;" onclick="showReadingInfo('spiritual')">
+                    <div class="text-4xl mb-4">🌙</div>
+                    <h3 class="cinzel text-lg font-semibold text-gold mb-2">Spiritual Growth</h3>
+                    <p class="text-sm text-cream">Inner wisdom</p>
+                </div>
+                
+                <div class="card-hover bg-gradient-to-b from-purple-900 to-navy-900 rounded-lg p-6 text-center cursor-pointer floating" 
+                     style="animation-delay: 2s;" onclick="showReadingInfo('yesno')">
+                    <div class="text-4xl mb-4">❓</div>
+                    <h3 class="cinzel text-lg font-semibold text-gold mb-2">Yes or No</h3>
+                    <p class="text-sm text-cream">Quick answers</p>
+                </div>
+                
+                <div class="card-hover bg-gradient-to-b from-purple-900 to-navy-900 rounded-lg p-6 text-center cursor-pointer floating" 
+                     style="animation-delay: 2.5s;" onclick="showReadingInfo('indepth')">
+                    <div class="text-4xl mb-4">⭐</div>
+                    <h3 class="cinzel text-lg font-semibold text-gold mb-2">In-Depth Reading</h3>
+                    <p class="text-sm text-cream">Comprehensive insight</p>
+                </div>
+            </div>
+            
+            <!-- Reading Info Display -->
+            <div id="reading-info" class="hidden bg-gradient-to-r from-purple-900 to-navy-900 rounded-lg p-8 text-center reveal">
+                <h3 id="reading-title" class="cinzel text-2xl font-bold text-gold mb-4"></h3>
+                <p id="reading-description" class="text-lg mb-6 max-w-2xl mx-auto"></p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button class="btn-mystical" onclick="window.location.href='readings.html'">Learn More</button>
+                    <button class="btn-mystical" onclick="window.location.href='https://kseniastar.etsy.com'">Book Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- About Preview -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-purple-900 to-navy-900">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="reveal">
+                    <img src="resources/ksenia-portrait.png" alt="Ksenia Star" class="rounded-lg shadow-2xl w-full max-w-md mx-auto">
+                </div>
+                <div class="reveal">
+                    <h2 class="cinzel text-4xl font-bold text-gold mb-6">Meet Ksenia Star</h2>
+                    <p class="text-lg mb-6">
+                        With over 10 years of experience in intuitive tarot reading, Ksenia combines ancient wisdom with modern understanding to guide you on your spiritual journey.
+                    </p>
+                    <p class="text-lg mb-8">
+                        Her compassionate approach and deep connection to the cards have helped hundreds find clarity, direction, and inner peace through life's challenges.
+                    </p>
+                    <button class="btn-mystical" onclick="window.location.href='about.html'">Learn My Story</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Testimonials -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="cinzel text-4xl font-bold text-gold mb-6">Client Testimonials</h2>
+                <p class="text-lg">Hear from those who've found guidance and clarity</p>
+            </div>
+            
+            <div class="splide" id="testimonial-slider">
+                <div class="splide__track">
+                    <ul class="splide__list">
+                        <li class="splide__slide">
+                            <div class="testimonial-card rounded-lg p-8 text-center">
+                                <div class="text-4xl mb-4">⭐⭐⭐⭐⭐</div>
+                                <p class="text-lg mb-6 italic">"Ksenia's reading was incredibly accurate and gave me the clarity I needed during a difficult time. Her intuitive insights helped me make important life decisions."</p>
+                                <h4 class="cinzel text-gold font-semibold">Sarah M.</h4>
+                            </div>
+                        </li>
+                        <li class="splide__slide">
+                            <div class="testimonial-card rounded-lg p-8 text-center">
+                                <div class="text-4xl mb-4">⭐⭐⭐⭐⭐</div>
+                                <p class="text-lg mb-6 italic">"The spiritual guidance I received was profound. Ksenia has a gift for connecting with the cards and providing meaningful, actionable advice."</p>
+                                <h4 class="cinzel text-gold font-semibold">Michael R.</h4>
+                            </div>
+                        </li>
+                        <li class="splide__slide">
+                            <div class="testimonial-card rounded-lg p-8 text-center">
+                                <div class="text-4xl mb-4">⭐⭐⭐⭐⭐</div>
+                                <p class="text-lg mb-6 italic">"I've had several readings with Ksenia, and each one has been spot-on. Her compassionate approach makes you feel comfortable and understood."</p>
+                                <h4 class="cinzel text-gold font-semibold">Emma L.</h4>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="bg-black bg-opacity-70 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto text-center">
+            <div class="cinzel text-2xl font-bold text-gold mb-4">Ksenia Star Tarot</div>
+            <p class="text-cream mb-6">Guiding you through life's mysteries with ancient wisdom and intuitive insight</p>
+            <div class="flex justify-center space-x-6 mb-6">
+                <a href="https://kseniastar.etsy.com" class="text-gold hover:text-cream transition-colors">Etsy Shop</a>
+                <a href="https://linktr.ee/zo_di_ac" class="text-gold hover:text-cream transition-colors">Social Media</a>
+            </div>
+            <p class="text-silver text-sm">© 2025 Ksenia Star Tarot. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <script src="main.js"></script>
+</body>
+</html>
